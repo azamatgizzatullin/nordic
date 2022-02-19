@@ -1,0 +1,110 @@
+//
+//  ContentView.swift
+//  Catalog
+//
+//  Created by Александр on 28/01/2022.
+//  Copyright © 2022 Александр. All rights reserved.
+//
+
+import SwiftUI
+import UIKit
+
+class API {
+    
+    let API_URL: String = "http://inordic.alexweber.ru/api/index.php?"
+    let ACTIONS: [String] = [
+        "getAllGoods",
+        "getUser"
+    ]
+    
+    //http://inordic.alexweber.ru/api/index.php?action=getUser&LOGIN=ivanov&PASSWORD=qwerty
+    
+    func getApiURL(actionKey: Int, params: String) -> URL {
+
+         let res = URL(string: "\(self.API_URL)action=\(self.ACTIONS[actionKey])\(params)")!
+         return(res)
+        
+    }
+    
+    func query(actionKey: Int, params: String){
+        
+       let url = getApiURL(actionKey: actionKey, params: params)
+       let task = URLSession.shared.dataTask(with: url as URL) { (data, response, error)  in
+        
+        
+       
+            //try JSONSerialization.jsonObject(with: data!) as! [String:String]
+            //let currentConditions = parsedData as! [String:Any]
+            //let jsonData = data(using: .utf8)!
+            //let blogPost: BlogPost = try! JSONDecoder().decode(BlogPost.self, from: jsonData)
+
+            print(data)
+        
+        
+            
+            struct BlogPost: Decodable {
+                let NAME: String
+                let FAMILY: String
+            }
+        
+        do {
+            let userInfo: [BlogPost] = try JSONDecoder().decode([BlogPost].self, from: data!)
+            
+           let storyboard = UIStoryboard(name: "MainDisplay", bundle: nil)
+           let vc = storyboard.instantiateViewController(withIdentifier: "myVCID")
+            
+            if(userInfo.count > 0) {
+                //print(userInfo[0].NAME)
+               
+            }
+        } catch {
+            print("ERROR:", error)
+        }
+            
+        
+          
+        
+        
+       }
+       task.resume()
+        
+    }
+
+}
+
+struct ContentView: View {
+    
+    @State var login: String = ""
+    @State var password: String = ""
+    
+     var body: some View {
+        
+       VStack() {
+
+            Group {
+                Text("title")
+                TextField("Введите логин..." , text: $login)
+                TextField("Введите пароль...", text: $password)
+            }
+        
+            Button("Войти") {
+        
+                print(self.$login.wrappedValue)
+                print(self.$password.wrappedValue)
+                
+                //QuerySend(action: "getAllGoods", params: "")
+                let objAPI = API()
+                objAPI.query(actionKey: 1, params: "&LOGIN=\(self.$login.wrappedValue)&PASSWORD=\(self.$password.wrappedValue)")
+    
+            }
+            
+        }.padding()
+        
+    }
+}
+
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
+}
