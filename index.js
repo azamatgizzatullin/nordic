@@ -221,8 +221,8 @@ app.post('/add_comment_form', typeAddGood, function (req, res) {
     eventEmitter
   )
 //Обновить товар
- // moduleGood.EDIT
- // req.body.GOOD_ID, вписать в COMMENTS_ID req.body.COMMENT_ID
+//Нужно вызывать функцию moduleGood.EDIT, чтобы изменить товар по req.body.GOOD_ID (берётся из select)
+//и передать в неё строку COMMENT_ID, из req.body.COMMENT_ID_UPDATED, в которой будут старые ID комментариев и новый
 
 })
 
@@ -280,10 +280,14 @@ app.get('/form_add_comment', function (req, res) {
                 <span>ID пользователя:</span>
                 <input type="text" value="1" name="USER_ID" />
                 <span>Дата:</span>
-                <input type="text" value="${today}" name="TIME" />
+                <input type="text" value="${today}" name="TIME" /><br>
+                <span>COMMENT_ID_UPDATED:</span>
+                <input type="text" value="${commentid}" name="COMMENT_ID_UPDATED" /><span style="color:grey">(сюда надо вписать старые id и новый id комментария)</span><br>
                 <input type='submit' value='Отправить'>
               </form>
-              <div id="current_comments">${feedbacks}</div>
+              <div id="current_comments">
+              <h3>Список всех комментариев:</h3>
+              ${feedbacks}</div>
             `)
             }
           }
